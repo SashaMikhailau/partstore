@@ -2,9 +2,12 @@ package com.azya.partstore.views;
 
 import com.azya.partstore.PartRepository;
 import com.azya.partstore.models.Part;
+import com.azya.partstore.services.PartService;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.grid.FooterRow;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.incubator.Paginator;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
@@ -16,23 +19,37 @@ import java.util.List;
 
 @Route("")
 public class MainView extends VerticalLayout {
-    private PartRepository partRepository;
-    final Grid<Part> grid = new Grid<>();
+    private static final int ROWSNUMBERPERPAGE = 10;
 
-    public MainView(PartRepository partRepository) {
-        this.partRepository = partRepository;
+    private PartService partService;
+
+    final Grid<Part> grid = new Grid<>();
+    final Paginator gridPaginator = new Paginator();
+
+    public MainView(PartService partService) {
+        this.partService = partService;
+
         grid.setSizeFull();
         grid.addColumn(Part::getId).setHeader("ID");
         grid.addColumn(Part::getName).setHeader("Название");
         grid.addColumn(Part::getCount).setHeader("Количество");
-        grid.addColumn(Part::getNeeded).setHeader("Нужно");
-        add(grid);
-        setHeight("100vh");
-        updateList();
+        grid.addColumn(part->part.getNeeded()?"Да":"Нет").setHeader("Нужно");
+        grid.setPageSize(10);
+        gridPaginator.setFirstLabel("В начало");
+        gridPaginator.setLastLabel("В конец");
+        gridPaginator.addChangeSelectedPageListener(event -> updateList(event.getPage()));
+
+        add(grid,gridPaginator);
+        setHeight("50vh");
+        updateList(1);
     }
 
-    private void updateList() {
-        grid.setItems((Collection<Part>)partRepository.findAll());
+    private void updateList(int pageNumber) {
+        List<Part> parts = partService.getAllParts();
+        int endCount = Math.min(pageNumber * ROWSNUMBERPERPAGE,parts.size());
+        int startCount = Math.min(pageNumber * ROWSNUMBERPERPAGE-10,parts.size());
+        grid.setItems(parts.subList(startCount,endCount));
+        gridPaginator.setNumberOfPages(parts.size()/ROWSNUMBERPERPAGE+1);
     }
 
 
