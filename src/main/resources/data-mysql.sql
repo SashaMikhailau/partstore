@@ -1,0 +1,5 @@
+INSERT INTO parts VALUES(1,10,'Видеокарта',1);
+INSERT INTO parts VALUES(2,5,'VIDEOCARD',1);
+INSERT INTO parts VALUES(3,10,'VIDEOCARD',1);
+INSERT INTO parts VALUES(4,10,'Видеокарта',1);
+INSERT INTO parts VALUES(5,10,'Видеокарта',1);
