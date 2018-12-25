@@ -27,6 +27,7 @@ public class PartServiceImpl implements PartService {
 
     @Override
     public int getAvailableComputersCount() {
-        return 0;
+        return
+                0;
     }
 }
