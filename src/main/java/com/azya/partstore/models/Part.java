@@ -13,8 +13,9 @@ public class Part {
     private Long id;
 
     private String name;
-
-    private Boolean needed;
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private PartType type;
 
     private Integer count;
 
@@ -34,12 +35,12 @@ public class Part {
         this.name = name;
     }
 
-    public Boolean getNeeded() {
-        return needed;
+    public PartType getType() {
+        return type;
     }
 
-    public void setNeeded(Boolean needed) {
-        this.needed = needed;
+    public void setType(PartType type) {
+        this.type = type;
     }
 
     public Integer getCount() {

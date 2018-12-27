@@ -11,6 +11,6 @@ public interface PartService {
 
     void deletePart(Part part);
 
-    int getAvailableComputersCount();
+    long getAvailableComputersCount();
 
 }
