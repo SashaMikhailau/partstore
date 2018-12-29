@@ -19,6 +19,13 @@ public class PartServiceImpl implements PartService {
     }
 
     @Override
+    public List<Part> getAllParts(String searchQuery) {
+        return getAllParts().stream()
+                .filter(part->part.getName().contains(searchQuery))
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public void updatePart(Part part) {
 
     }

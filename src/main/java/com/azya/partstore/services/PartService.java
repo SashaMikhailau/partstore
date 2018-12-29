@@ -6,6 +6,7 @@ import java.util.List;
 
 public interface PartService {
     List<Part> getAllParts();
+    List<Part> getAllParts(String searchQuery);
 
     void updatePart(Part part);
 
