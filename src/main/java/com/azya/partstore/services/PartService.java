@@ -14,4 +14,8 @@ public interface PartService {
 
     long getAvailableComputersCount();
 
+    PartViewMode getPartViewMode();
+
+    void setPartViewMode(PartViewMode partViewMode);
+
 }

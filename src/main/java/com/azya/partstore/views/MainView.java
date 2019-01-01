@@ -2,33 +2,51 @@ package com.azya.partstore.views;
 
 import com.azya.partstore.models.Part;
 import com.azya.partstore.services.PartService;
+import com.azya.partstore.services.PartViewMode;
+import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.Route;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.klaudeta.PaginatedGrid;
 
 import java.util.List;
 
 @Route("")
 public class MainView extends VerticalLayout {
-    private PartService partService;
 
+    private PartService partService;
     private final PaginatedGrid<Part> grid = new PaginatedGrid<>();
-    private final TextField filter = new TextField();
+    private final TextField tvFilter = new TextField();
+    private RadioButtonGroup<PartViewMode> rgPartViewMode = new RadioButtonGroup<>();
+    private PartFormView partFormView = new PartFormView(this);
+
+    public PartService getPartService() {
+        return partService;
+    }
 
     public MainView(PartService partService) {
         this.partService = partService;
         initGrid();
-        add(filter,grid);
+        HorizontalLayout filterLine = new HorizontalLayout(tvFilter,rgPartViewMode);
+        HorizontalLayout gridLine= new HorizontalLayout(grid,partFormView);
+        setSizeFull();
+        add(filterLine,gridLine);
         setHeight("100vh");
     }
     private void initGrid() {
-        filter.setPlaceholder("поиск части");
-        filter.setValueChangeMode(ValueChangeMode.EAGER);
-        filter.addValueChangeListener(value -> updateGrid());
-        grid.setSizeFull();
+        tvFilter.setPlaceholder("поиск части");
+        tvFilter.setValueChangeMode(ValueChangeMode.EAGER);
+        tvFilter.addValueChangeListener(value -> updateGrid());
+        rgPartViewMode.setItems(PartViewMode.values());
+        rgPartViewMode.addValueChangeListener(event -> {
+            partService.setPartViewMode(event.getValue());
+            updateGrid();
+        });
         grid.addColumn(Part::getId).setHeader("ID");
         grid.addColumn(part -> part.getType().toString()).setHeader("Тип");
         grid.addColumn(Part::getName).setHeader("Название");
@@ -40,10 +58,11 @@ public class MainView extends VerticalLayout {
     }
 
     private void updateGrid() {
-        String searchText = filter.getValue();
+        String searchText = tvFilter.getValue();
         List<Part> parts = partService.getAllParts(searchText);
         grid.setItems(parts);
         grid.setPaginatorSize(parts.size()/10+1);
+        rgPartViewMode.setValue(partService.getPartViewMode());
         updateFooterInfo();
     }
 

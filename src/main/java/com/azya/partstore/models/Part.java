@@ -4,7 +4,7 @@ import javax.persistence.*;
 
 @Entity
 @Table(name = "parts")
-public class Part {
+public class Part implements Comparable<Part> {
     protected Part() {
     }
 
@@ -49,5 +49,10 @@ public class Part {
 
     public void setCount(Integer count) {
         this.count = count;
+    }
+
+    @Override
+    public int compareTo(Part part) {
+        return id.compareTo(part.getId());
     }
 }

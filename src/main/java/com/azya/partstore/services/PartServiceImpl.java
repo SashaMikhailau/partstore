@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 public class PartServiceImpl implements PartService {
     @Autowired
     private PartRepository partRepository;
+    private PartViewMode partViewMode = PartViewMode.ALL;
     @Override
     public List<Part> getAllParts() {
         return (List<Part>)partRepository.findAll();
@@ -20,9 +21,25 @@ public class PartServiceImpl implements PartService {
 
     @Override
     public List<Part> getAllParts(String searchQuery) {
-        return getAllParts().stream()
-                .filter(part->part.getName().contains(searchQuery))
-                .collect(Collectors.toList());
+        Map<Boolean, List<Part>> partMap = getAllParts().stream()
+                .filter(part -> part.getName().contains(searchQuery))
+                .collect(Collectors.partitioningBy(part -> part.getType().isNeeded()));
+        switch (partViewMode) {
+            case NEEDED:
+                return partMap.get(true);
+            case NOTNEEDED:
+                return partMap.get(false);
+                default:return partMap.values().stream().flatMap(Collection::stream).sorted().collect(Collectors.toList());
+        }
+    }
+
+    @Override
+    public PartViewMode getPartViewMode() {
+        return partViewMode;
+    }
+
+    public void setPartViewMode(PartViewMode partViewMode) {
+        this.partViewMode = partViewMode;
     }
 
     @Override
