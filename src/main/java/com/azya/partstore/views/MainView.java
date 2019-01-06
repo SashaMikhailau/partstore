@@ -3,6 +3,9 @@ package com.azya.partstore.views;
 import com.azya.partstore.models.Part;
 import com.azya.partstore.services.PartService;
 import com.azya.partstore.services.PartViewMode;
+import com.vaadin.flow.component.AbstractField;
+import com.vaadin.flow.component.HasValue;
+import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.radiobutton.RadioButtonGroup;
@@ -30,13 +33,13 @@ public class MainView extends VerticalLayout {
     }
 
     public MainView(PartService partService) {
-        this.partService = partService;
-        initGrid();
-        HorizontalLayout filterLine = new HorizontalLayout(tvFilter,rgPartViewMode);
-        HorizontalLayout gridLine= new HorizontalLayout(grid,partFormView);
-        setSizeFull();
-        add(filterLine,gridLine);
-        setHeight("100vh");
+                this.partService = partService;
+                initGrid();
+                HorizontalLayout filterLine = new HorizontalLayout(tvFilter,rgPartViewMode);
+                grid.setSizeFull();
+                add(filterLine,grid,partFormView);
+                setSizeFull();
+        ;
     }
     private void initGrid() {
         tvFilter.setPlaceholder("поиск части");
@@ -55,9 +58,16 @@ public class MainView extends VerticalLayout {
         grid.appendFooterRow();
         updateGrid();
         grid.setPageSize(10);
+        grid.asSingleSelect().addValueChangeListener(new HasValue.ValueChangeListener<AbstractField.ComponentValueChangeEvent<Grid<Part>, Part>>() {
+            @Override
+            public void valueChanged(AbstractField.ComponentValueChangeEvent<Grid<Part>, Part> event) {
+                partFormView.setPart(event.getValue());
+            }
+        });
+
     }
 
-    private void updateGrid() {
+    void updateGrid() {
         String searchText = tvFilter.getValue();
         List<Part> parts = partService.getAllParts(searchText);
         grid.setItems(parts);

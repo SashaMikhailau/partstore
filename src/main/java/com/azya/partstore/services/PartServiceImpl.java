@@ -44,11 +44,12 @@ public class PartServiceImpl implements PartService {
 
     @Override
     public void updatePart(Part part) {
-
+        partRepository.save(part);
     }
 
     @Override
     public void deletePart(Part part) {
+        partRepository.delete(part);
 
     }
     /*НУНЖО ИМЗЕНИТЬ КОЛЛЕКТОРС КАУНТИНГ НА СУММИРОВАНИЕ ЧИСЕЛ*/
