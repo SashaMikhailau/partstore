@@ -44,7 +44,12 @@ public class PartServiceImpl implements PartService {
 
     @Override
     public void updatePart(Part part) {
-        partRepository.save(part);
+        if (part.getCount() <= 0) {
+            partRepository.delete(part);
+        } else {
+            partRepository.save(part);
+
+        }
     }
 
     @Override
@@ -52,20 +57,20 @@ public class PartServiceImpl implements PartService {
         partRepository.delete(part);
 
     }
-    /*НУНЖО ИМЗЕНИТЬ КОЛЛЕКТОРС КАУНТИНГ НА СУММИРОВАНИЕ ЧИСЕЛ*/
+    /**/
     @Override
     public long getAvailableComputersCount() {
         List<Part> parts = getAllParts();
-        Map<PartType, Long> typesCount = parts.stream()
+        Map<PartType,Integer> typesCount = parts.stream()
                 .filter(part->part.getType()
                         .isNeeded())
-                .collect(Collectors.groupingBy(Part::getType, Collectors.counting()));
+                .collect(Collectors.groupingBy(Part::getType, Collectors.reducing(0,Part::getCount,(i1,i2)->i1+i2)));
 
-        Map<PartType, Long> partTypeMap = Arrays.stream(PartType.values())
+        Map<PartType, Integer> partTypeMap = Arrays.stream(PartType.values())
                 .filter(PartType::isNeeded)
-                .collect(Collectors.toMap(partType -> partType, partType -> 0L));
+                .collect(Collectors.toMap(partType -> partType, partType -> 0));
         partTypeMap.putAll(typesCount);
-        List<Long> counts = new ArrayList<>(partTypeMap.values());
+        List<Integer> counts = new ArrayList<>(partTypeMap.values());
         Collections.sort(counts);
 
         return counts.get(0);

@@ -5,19 +5,29 @@ import javax.persistence.*;
 @Entity
 @Table(name = "parts")
 public class Part implements Comparable<Part> {
-    protected Part() {
+    public Part() {
     }
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Override
+    public String toString() {
+        return "Part{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", type=" + type +
+                ", count=" + count +
+                '}';
+    }
+
     private String name;
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
     private PartType type;
 
-    private Integer count;
+    private int count;
 
     public Long getId() {
         return id;

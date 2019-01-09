@@ -2,7 +2,9 @@ package com.azya.partstore.models;
 
 public enum PartType {
     MOTHERBOARD("Материнская плата", true),CPU("Процессор", true),
-    GRAPHICCARD("Видеокарта", false), HARDDRIVE("Жесткий диск", true);
+    GRAPHICCARD("Видеокарта", false), HARDDRIVE("Жесткий диск", true),
+    CASE("Системный блок",true),RAM("Оперативная память",true)
+    , OTHER("Прочее", false);
     private String name;
     private boolean needed;
 
