@@ -1,3 +1,12 @@
+USE test;
+DROP TABLE IF EXISTS parts;
+CREATE TABLE parts(
+id INT(11) NOT NULL AUTO_INCREMENT,
+type VARCHAR(20) NOT NULL,
+name VARCHAR(255) NOT NULL,
+count INT(11) NOT NULL,
+PRIMARY KEY (id))
+DEFAULT CHARACTER SET utf8 DEFAULT COLLATE utf8_unicode_ci;
 INSERT INTO parts(type,name,count) VALUES('MOTHERBOARD','Gigabyte Z390 UD',3);
 INSERT INTO parts(type,name,count) VALUES('MOTHERBOARD','MSI MPG Z390M Gaming Edge AC',5);
 INSERT INTO parts(type,name,count) VALUES('MOTHERBOARD','Z390 Aorus Pro',4);
