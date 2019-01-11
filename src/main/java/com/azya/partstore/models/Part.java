@@ -61,6 +61,17 @@ public class Part implements Comparable<Part> {
         this.count = count;
     }
 
+    public boolean isValid() {
+        if (count <= 0) {
+            return false;
+        }
+        if(type==null) return false;
+        if (name.length() < 4) {
+            return false;
+        }
+        return true;
+    }
+
     @Override
     public int compareTo(Part part) {
         return id.compareTo(part.getId());

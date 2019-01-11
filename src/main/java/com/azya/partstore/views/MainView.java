@@ -16,7 +16,6 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.Route;
-import org.vaadin.klaudeta.PaginatedGrid;
 
 import java.util.List;
 
@@ -24,7 +23,7 @@ import java.util.List;
 public class MainView extends VerticalLayout {
 
     private PartService partService;
-    private PaginatedGrid<Part> grid = new PaginatedGrid<>();
+    private CustomGridView<Part> gridView = new CustomGridView(10,this);
     private TextField tvFilter = new TextField();
     private Button btnAdd = new Button("Добавить", VaadinIcon.PLUS.create());
     private RadioButtonGroup<PartViewMode> rgPartViewMode = new RadioButtonGroup<>();
@@ -38,9 +37,9 @@ public class MainView extends VerticalLayout {
                 this.partService = partService;
                 initGrid();
                 HorizontalLayout filterLine = new HorizontalLayout(tvFilter,rgPartViewMode,btnAdd);
-                grid.setWidth("100%");
+                gridView.setWidth("100%");
                 partFormView.setWidth("100%");
-                add(filterLine,grid,partFormView);
+                add(filterLine, gridView,partFormView);
                 setSizeFull();
     }
 
@@ -56,16 +55,16 @@ public class MainView extends VerticalLayout {
         });
         btnAdd.addClickListener(buttonClickEvent ->{
             partFormView.setEnabled(true);
-            grid.asSingleSelect().clear();
+            gridView.getGrid().asSingleSelect().clear();
             partFormView.setPart(new Part());
         });
         partFormView.setEnabled(false);
-        grid.addColumn(Part::getId).setHeader("ID").setWidth("10%");
-        grid.addColumn(part -> part.getType().toString()).setHeader("Тип").setWidth("20%");
-        grid.addColumn(Part::getName).setHeader("Название").setWidth("40%");
-        grid.addColumn(Part::getCount).setHeader("Количество").setWidth("10%");
-        grid.addColumn(part -> part.getType().isNeeded() ? "Да" : "Нет").setHeader("Нужно").setWidth("10%");
-        grid.addColumn(new ComponentRenderer<>((Part selectedPart) -> {
+        gridView.addColumn(Part::getId).setHeader("ID").setWidth("10%");
+        gridView.addColumn(part -> part.getType().toString()).setHeader("Тип").setWidth("20%");
+        gridView.addColumn(Part::getName).setHeader("Название").setWidth("40%");
+        gridView.addColumn(Part::getCount).setHeader("Количество").setWidth("10%");
+        gridView.addColumn(part -> part.getType().isNeeded() ? "Да" : "Нет").setHeader("Нужно").setWidth("10%");
+        gridView.addColumn(new ComponentRenderer<>((Part selectedPart) -> {
             Button btnRemove = new Button(VaadinIcon.TRASH.create(), event -> {
                 partService.deletePart(selectedPart);
                 updateGrid();
@@ -75,10 +74,10 @@ public class MainView extends VerticalLayout {
             });
             return new HorizontalLayout(btnRemove);
         })).setWidth("10%");
-        grid.appendFooterRow();
+        gridView.appendFooterRow();
         updateGrid();
-        grid.setPageSize(10);
-        grid.asSingleSelect().addValueChangeListener(new HasValue.ValueChangeListener<AbstractField.ComponentValueChangeEvent<Grid<Part>, Part>>() {
+
+        gridView.asSingleSelect().addValueChangeListener(new HasValue.ValueChangeListener<AbstractField.ComponentValueChangeEvent<Grid<Part>, Part>>() {
             @Override
             public void valueChanged(AbstractField.ComponentValueChangeEvent<Grid<Part>, Part> event) {
                 if (event.getValue() != null) {
@@ -97,15 +96,14 @@ public class MainView extends VerticalLayout {
     void updateGrid() {
         String searchText = tvFilter.getValue();
         List<Part> parts = partService.getAllParts(searchText);
-        grid.setItems(parts);
-        grid.setPaginatorSize(parts.size()/10+1);
+        gridView.setItems(parts);
         rgPartViewMode.setValue(partService.getPartViewMode());
         updateFooterInfo();
-        grid.asSingleSelect().clear();
+        gridView.asSingleSelect().clear();
     }
 
     private void updateFooterInfo() {
-        grid.getFooterRows().get(0).getCells().get(2).setText(String.format("Всего можно собрать %d компьютеров",
+        gridView.getFooterRows().get(0).getCells().get(2).setText(String.format("Всего можно собрать %d компьютеров",
                 partService.getAvailableComputersCount()));
     }
 
